@@ -1,16 +1,12 @@
+import debounce from './debounce.js'
 export default class Slide {
     constructor(slide, wrapper){
         this.slide = document.querySelector(slide);
         this.wrapper = document.querySelector(wrapper);
         this.dist = {finalPosition: 0, startX:0, movement: 0}
-
+        this.activeClass = 'active';
     }
 
-    bindEvents(){
-        this.onStart = this.onStart.bind(this);
-        this.onEnd = this.onEnd.bind(this);
-        this.onMove = this.onMove.bind(this);
-    }
         
 transition(active) {
     this.slide.style.transition = active ? 'transform .3s' : '';
@@ -67,7 +63,7 @@ changeSlideOnEnd(){
     } else {
         this.changeSlide(this.index.active);
     }
-    console.log(this.dist.movement); 
+
 }
 
 addSlideEvents(){
@@ -89,7 +85,7 @@ slidesConfig(){
         const position = this.slidePosition(element);
         return { position, element }
     });
-    console.log(this.slideArray)
+
 }
 
 slidesIndexNav(index){
@@ -105,8 +101,15 @@ changeSlide(index){
     this.moveSlide(activeSlide.position);
     this.slidesIndexNav(index);
     this.dist.finalPosition = activeSlide.position;
-    console.log(this.index);
+
+    this.changeActiveClass();
 }
+
+changeActiveClass(){
+    this.slideArray.forEach(item => item.element.classList.remove(this.activeClass));
+    this.slideArray[this.index.active].element.classList.add(this.activeClass)
+}
+
 
 activePrevSlide(){
     if (this.index.prev !== undefined){this.changeSlide(this.index.prev)
@@ -117,11 +120,31 @@ activeNextSlide(){
 }
 }
 
+onResize(){
+  setTimeout(() => {
+    
+    this.slidesConfig();
+    this.changeSlide(this.index.active);
+
+  }, 1000);}
+
+addResizeEvent(){
+    window.addEventListener('resize', this.onResize);
+}
+
+bindEvents(){
+    this.onResize = this.onResize.bind(this);
+    this.onStart = this.onStart.bind(this);
+    this.onEnd = this.onEnd.bind(this);
+    this.onMove = this.onMove.bind(this);
+}
+
 init(){
     this.bindEvents();
     this.addSlideEvents();
     this.slidesConfig();
     this.transition(true);
+    this.addResizeEvent();
 return this;
 }
 }
