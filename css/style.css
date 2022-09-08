@@ -29,6 +29,7 @@ img{
     width: 80vw;
     max-width: 800px;
     margin: 20px;
+    
     opacity: .8;
     transform: scale(.8);
     transition: .4s;
